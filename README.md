@@ -11,7 +11,7 @@ Added availability monitoring with **UptimeRobot**.
 
 ### Feature List
 - **Add and Delete Tasks**: Accessible through a web interface.
-- **Public Availability**: [http://37.27.8.233](http://37.27.8.233).
+- **Public Availability**: [http://strictodolist.duckdns.org](http://strictodolist.duckdns.org).
 - **Monitoring with UptimeRobot**: Checks every **5 minutes**.
   - Result: **100% uptime**, average response time **273 ms**.
 
@@ -45,7 +45,10 @@ pip install flask
 ```
 
 #### 1.2. Building the Application
-Created **app.py** with basic Flask functionality:
+Created **app.py**:
+
+- Added a basic Flask application.
+- Code snippet:
 
 ```python
 from flask import Flask, render_template, request, redirect, url_for
@@ -76,19 +79,19 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
 ```
 
-Created a **templates** directory for HTML templates:
+Created a **templates** directory for storing HTML templates:
 
 ```bash
 mkdir templates
 ```
 
-Created **index.html** in the templates directory:
+Created **index.html** for the web interface:
 
 ```bash
 nano templates/index.html
 ```
 
-Added content to **index.html**:
+Content:
 
 ```html
 <!DOCTYPE html>
@@ -111,21 +114,17 @@ Added content to **index.html**:
 </html>
 ```
 
-#### 1.3. Local Testing
+### 1.3. Local Testing
 Ran the application locally to test functionality:
 
 ```bash
 python app.py
 ```
 
-Tested in the browser by visiting [http://localhost:5000](http://localhost:5000). Confirmed adding and deleting tasks worked.
+Visited [http://localhost:5000](http://localhost:5000) to confirm adding and deleting tasks worked.
 
-#### Screenshot of Local Testing
-
-![Local Testing](Screenshot%202025-03-27%20at%2021.55.50.png)
-
-#### 1.4. Creating **requirements.txt**
-Generated the dependency list for the project:
+### 1.4. Creating **requirements.txt**
+Generated the dependency list:
 
 ```bash
 pip freeze > requirements.txt
@@ -133,35 +132,27 @@ pip freeze > requirements.txt
 
 Content of **requirements.txt**:
 
-```text
+```
 Flask==2.0.1
 ```
+
+---
 
 ## 2. Pushing to GitHub
 
 ### 2.1. Initializing Git Repository
-Initialized Git in the project directory:
+Initialized Git and added project files:
 
 ```bash
 git init
-```
-
-Added project files to Git (**app.py**, **templates/index.html**, **requirements.txt**, and **Dockerfile**):
-
-```bash
 git add app.py templates/index.html requirements.txt Dockerfile
-```
-
-Committed the changes with a commit message:
-
-```bash
 git commit -m "Initial To-Do App files"
 ```
 
 ### 2.2. Creating a **Dockerfile**
 Created a **Dockerfile** to containerize the application:
 
-```dockerfile
+```bash
 FROM python:3.9-slim
 WORKDIR /app
 COPY requirements.txt .
@@ -171,7 +162,7 @@ EXPOSE 5000
 CMD ["python", "app.py"]
 ```
 
-Added the **Dockerfile** to Git and committed the changes:
+Committed the Dockerfile:
 
 ```bash
 git add Dockerfile
@@ -179,7 +170,7 @@ git commit -m "Add Dockerfile"
 ```
 
 ### 2.3. Pushing to GitHub
-Linked the local repository to GitHub and pushed the code:
+Pushed the project to GitHub:
 
 ```bash
 git remote add origin https://github.com/Tomo1912/to-do-app.git
@@ -187,14 +178,12 @@ git branch -M main
 git push -u origin main
 ```
 
+---
+
 ## 3. Deployment on Hetzner VPS
 
 ### 3.1. Creating the VPS
-Set up a new VPS in the Hetzner Cloud console (CAX11 server):
-
-- **Specs**: 2 vCPU, 4 GB RAM, 40 GB disk
-- **OS**: Ubuntu 22.04
-- **IP Address**: 37.27.8.233
+Set up a **Hetzner CAX11** server with **Ubuntu 22.04**.
 
 ### 3.2. Connecting to the VPS
 Connected via SSH:
@@ -207,10 +196,9 @@ ssh root@37.27.8.233
 
 ```bash
 apt update
-apt install -y git
+apt install -y git nginx
 curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh
-apt install -y nginx
 ```
 
 ### 3.4. Cloning the Repository
@@ -235,12 +223,12 @@ docker ps
 nano /etc/nginx/sites-available/default
 ```
 
-Added configuration to proxy requests to the app:
+Config:
 
 ```nginx
 server {
     listen 80;
-    server_name 37.27.8.233;
+    server_name strictodolist.duckdns.org;
 
     location / {
         proxy_pass http://localhost:5000;
@@ -256,31 +244,33 @@ Restarted Nginx:
 systemctl restart nginx
 ```
 
-Tested the application by visiting [http://37.27.8.233](http://37.27.8.233).
+---
 
 ## 4. Setting Up Monitoring
 
-### 4.1. UptimeRobot
-Configured UptimeRobot to monitor the app every 5 minutes.
+### 4.1. Registering with UptimeRobot
+- Created an account on [uptimerobot.com](https://uptimerobot.com).
+- Added a new **HTTP(s)** monitor for **strictodolist.duckdns.org**.
+- Set interval to **5 minutes**.
+- Enabled email notifications.
+- Results: **100% uptime**, **273 ms** average response time.
 
-- **Monitor Type**: HTTP(s)
-- **URL**: [http://37.27.8.233](http://37.27.8.233)
-- **Interval**: 5 minutes
-- **Notifications**: Email
-- **Result**: 100% uptime, 273 ms average response time
+---
 
 ## 5. Maintenance
 
-To restart the Docker container if the server goes down:
+### 5.1. Restarting Docker Container
 
 ```bash
 docker start to-do-app
 ```
 
-To check the status of Nginx:
+### 5.2. Checking Nginx Status
 
 ```bash
 systemctl status nginx
 ```
+
+
 
 
